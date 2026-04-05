@@ -52,13 +52,6 @@ function App() {
     return () => window.removeEventListener('popstate', handlePopState);
   }, []);
 
-  // ── Navigate function ──────────────────────────────────────────────────────
-  const navigate = (path) => {
-    window.history.pushState({}, '', path);
-    setCurrentPath(path);
-    window.scrollTo(0, 0);
-  };
-
   // ── Settings state ────────────────────────────────────────────────────────
   const [settings, setSettings] = useState({
     initialText: SAMPLE_TEXT,

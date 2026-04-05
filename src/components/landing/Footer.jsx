@@ -15,7 +15,22 @@ export default function Footer() {
                 <p className="footer-tagline">Convert digital text to realistic handwriting notes instantly.</p>
                 <div className="footer-links">
                     
-                    <a href="#" onClick={(e) => { e.preventDefault(); handleContactClick(); }}>Contact</a>
+                    <button 
+                        onClick={handleContactClick}
+                        style={{
+                            background: 'none',
+                            border: 'none',
+                            color: '#666688',
+                            cursor: 'pointer',
+                            textDecoration: 'none',
+                            fontSize: 'clamp(0.8rem, 1.2vw, 0.875rem)',
+                            transition: 'color 0.2s'
+                        }}
+                        onMouseEnter={(e) => e.target.style.color = '#a0a0c0'}
+                        onMouseLeave={(e) => e.target.style.color = '#666688'}
+                    >
+                        Contact
+                    </button>
                 </div>
                 <div className="footer-copy">
                     &copy; {new Date().getFullYear()} TextToHandwriting. All rights reserved.

@@ -1,7 +1,6 @@
 import React from 'react';
 import { PAPER_TYPES } from '../utils/paperGenerator';
 import { HANDWRITING_FONTS } from '../constants/fonts';
-import { INK_COLORS } from '../constants/colors';
 import { EFFECTS } from '../utils/effects';
 import { ColorPalette } from './ColorPalette';
 import { RESOLUTIONS } from '../constants/resolution';
@@ -55,17 +54,6 @@ export function ControlPanel({
   const inputText = t.inputText || '#e0e0ff';
   const borderColor = t.borderColor || '#2a2a4a';
   const textSecondary = t.textSecondary || '#666688';
-
-  const sectionLabel = {
-    color: labelColor,
-    fontSize: 10,
-    fontWeight: 700,
-    textTransform: 'uppercase',
-    letterSpacing: 1.2,
-    marginBottom: 8,
-    display: 'block',
-    fontFamily: 'system-ui',
-  };
 
   const sliderRowStyle = { marginBottom: 14 };
   const sliderHeaderStyle = {
