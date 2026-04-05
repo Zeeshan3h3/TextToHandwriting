@@ -10,8 +10,11 @@ import { StickyDownloadBar } from './components/StickyDownloadBar';
 import { applyEffect } from './utils/effects';
 import { getScale } from './constants/resolution';
 import { HANDWRITING_FONTS } from './constants/fonts';
+import { Routes, Route, useNavigate } from 'react-router-dom';
 import './styles/global.css';
 import './App.css';
+
+const BlogRoutes = React.lazy(() => import('./pages/blog'));
 
 // ── Sample placeholder text (matches original) ────────────────────────────────
 const SAMPLE_TEXT = `Start Writing from here.......`;
@@ -42,15 +45,7 @@ const LIGHT_THEME = {
 
 function App() {
   // ── Route state ────────────────────────────────────────────────────────────
-  const [currentPath, setCurrentPath] = useState(window.location.pathname);
-
-  useEffect(() => {
-    const handlePopState = () => {
-      setCurrentPath(window.location.pathname);
-    };
-    window.addEventListener('popstate', handlePopState);
-    return () => window.removeEventListener('popstate', handlePopState);
-  }, []);
+  const navigate = useNavigate();
 
   // ── Settings state ────────────────────────────────────────────────────────
   const [settings, setSettings] = useState({
@@ -228,7 +223,14 @@ function App() {
   };
 
   const handleGetStarted = () => {
-    document.getElementById('live-demo')?.scrollIntoView({ behavior: 'smooth' });
+    if (window.location.pathname !== '/') {
+      navigate('/#live-demo');
+      setTimeout(() => {
+        document.getElementById('live-demo')?.scrollIntoView({ behavior: 'smooth' });
+      }, 100);
+    } else {
+      document.getElementById('live-demo')?.scrollIntoView({ behavior: 'smooth' });
+    }
   };
 
   const handleTextUpdate = (text) => {
@@ -281,13 +283,19 @@ function App() {
 
   return (
     <div className="app-root">
-      {currentPath === '/contact' ? (
-        <ContactPage />
-      ) : (
-        <LandingPage onGetStarted={handleGetStarted}>
-          {workspaceContent}
-        </LandingPage>
-      )}
+      <Routes>
+        <Route path="/" element={
+          <LandingPage onGetStarted={handleGetStarted}>
+            {workspaceContent}
+          </LandingPage>
+        } />
+        <Route path="/contact" element={<ContactPage />} />
+        <Route path="/blog/*" element={
+          <React.Suspense fallback={<div style={{ padding: '100px', textAlign: 'center' }}>Loading...</div>}>
+            <BlogRoutes />
+          </React.Suspense>
+        } />
+      </Routes>
     </div>
   );
 }

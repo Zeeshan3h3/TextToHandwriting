@@ -6,10 +6,28 @@ import BenefitsSection from './BenefitsSection';
 import FAQSection from './FAQSection';
 import Footer from './Footer';
 import Navbar from '../common/Navbar';
+import SEOContent from './SEOContent';
+import SEO from '../seo/SEO';
+
+const webAppSchema = {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "Text to Handwriting Converter",
+    "url": "https://texttohandwriting.onrender.com/",
+    "applicationCategory": "UtilitiesApplication",
+    "operatingSystem": "Web",
+    "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+    },
+    "description": "Convert typed text into realistic handwriting instantly. Supports custom fonts, colors, and paper types."
+};
 
 export default function LandingPage({ onGetStarted, children }) {
     return (
         <div className="landing-wrapper" style={{ width: '100%', fontFamily: "'Inter', system-ui, sans-serif" }}>
+            <SEO schemaMarkup={webAppSchema} />
             <Navbar onGetStarted={onGetStarted} />
             <HeroSection onGetStarted={onGetStarted} />
 
@@ -22,6 +40,7 @@ export default function LandingPage({ onGetStarted, children }) {
             <HowItWorks />
             <BenefitsSection />
             <FAQSection />
+            <SEOContent />
             <Footer />
         </div>
     );

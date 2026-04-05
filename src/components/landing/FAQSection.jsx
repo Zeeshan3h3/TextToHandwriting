@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Helmet } from 'react-helmet-async';
 import './FAQSection.css';
 
 const faqs = [
@@ -12,8 +13,26 @@ const faqs = [
 export default function FAQSection() {
     const [openIdx, setOpenIdx] = useState(0);
 
+    const faqSchema = {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": faqs.map(faq => ({
+            "@type": "Question",
+            "name": faq.q,
+            "acceptedAnswer": {
+                "@type": "Answer",
+                "text": faq.a
+            }
+        }))
+    };
+
     return (
         <section className="faq-section" id="faq">
+            <Helmet>
+                <script type="application/ld+json">
+                    {JSON.stringify(faqSchema)}
+                </script>
+            </Helmet>
             <div className="faq-inner">
                 <h2 className="section-title" style={{ textAlign: 'center', marginBottom: 48 }}>
                     Frequently Asked Questions

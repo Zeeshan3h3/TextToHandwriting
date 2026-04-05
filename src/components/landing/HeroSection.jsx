@@ -6,12 +6,12 @@ export default function HeroSection({ onGetStarted }) {
         <section className="landing-hero">
             <div className="hero-inner">
                 <h1 className="hero-title">
-                    Convert Text to Handwriting in Seconds
+                    Text to Handwriting Converter
                 </h1>
-                <p className="hero-subtitle">
-                    Transform your digital notes, assignments, and documents into realistic, beautiful handwriting.
+                <h2 className="hero-subtitle" style={{ fontSize: '1.25rem', fontWeight: 400, marginTop: '1rem', color: '#a0a0c0' }}>
+                    Convert Text to Realistic Handwriting Online. Transform your digital notes, assignments, and documents into beautiful handwriting.
                     Export as high-resolution PDF or PNG—completely free.
-                </p>
+                </h2>
 
                 <div className="hero-cta-group">
                     <button className="hero-btn-primary" onClick={onGetStarted}>

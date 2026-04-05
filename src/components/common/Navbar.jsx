@@ -36,7 +36,7 @@ export default function Navbar({ onGetStarted }) {
         <nav className={`navbar ${scrolled ? 'scrolled' : ''} ${menuOpen ? 'menu-open' : ''}`}>
             <div className="nav-container">
                 <div className="nav-logo" onClick={handleLogoClick}>
-                    <img src="/logo.png" alt="TextToHandwriting Logo" className="logo-img" />
+                    <img src="/logo.png" alt="TextToHandwriting Logo" className="logo-img" fetchpriority="high" decoding="async" />
                     <span className="logo-text">TextToHandwriting</span>
                 </div>
 
