@@ -18,14 +18,7 @@ const FULL_PALETTE = [
     '#e65100', '#ef6c00', '#f57c00', '#fb8c00', '#ffa726', '#ffcc02',
 ];
 
-/**
- * Props:
- *   inkColor       — current hex color string (from settings)
- *   onColorChange  — (color: string) => void   — single color updates (picker, palette grid)
- *   onPresetSelect — (color: string, opacityBoost: number) => void
- *                    MUST be an atomic setter combining both keys in one call
- *                    to avoid React batching overwriting inkColor with stale state.
- */
+
 export function ColorPalette({ inkColor, onColorChange, onPresetSelect }) {
     const [paletteOpen, setPaletteOpen] = useState(false);
 

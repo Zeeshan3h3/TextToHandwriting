@@ -1,6 +1,5 @@
 import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
-
 /**
  * Export an array of paper DOM elements to a multi-page A4 PDF.
  * @param {HTMLElement[]} paperElements  - Array of raw DOM elements (not refs)
