@@ -1,17 +1,23 @@
 import React, { useEffect, useState } from 'react';
 
-export function StickyDownloadBar({ show, onDownload, wordCount }) {
+export function StickyDownloadBar({ show, onDownload, wordCount, onShare, onCopyLink, lastExportedUrl }) {
     const [isVisible, setIsVisible] = useState(false);
 
     useEffect(() => {
-        if (show) {
-            setIsVisible(true);
-        } else {
-            setIsVisible(false);
-        }
+        setIsVisible(!!show);
     }, [show]);
 
     if (!isVisible) return null;
+
+    const btnBase = {
+        border: 'none',
+        borderRadius: 100,
+        fontWeight: 700,
+        cursor: 'pointer',
+        transition: 'transform 0.1s, background 0.15s',
+        fontSize: 13,
+        padding: '8px 14px',
+    };
 
     return (
         <div style={{
@@ -21,15 +27,17 @@ export function StickyDownloadBar({ show, onDownload, wordCount }) {
             transform: 'translateX(-50%)',
             background: '#6060ff',
             color: '#fff',
-            padding: '12px 24px',
+            padding: '12px 20px',
             borderRadius: 100,
             boxShadow: '0 12px 32px rgba(96, 96, 255, 0.4), 0 4px 12px rgba(0,0,0,0.2)',
             display: 'flex',
             alignItems: 'center',
-            gap: 16,
+            gap: 10,
             zIndex: 900,
             animation: 'slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
-            fontFamily: 'system-ui'
+            fontFamily: 'system-ui',
+            flexWrap: 'wrap',
+            maxWidth: 'calc(100vw - 48px)',
         }}>
             <style>
                 {`
@@ -40,30 +48,47 @@ export function StickyDownloadBar({ show, onDownload, wordCount }) {
         `}
             </style>
 
-            <div style={{ display: 'flex', flexDirection: 'column', fontSize: 13 }}>
-                <span style={{ fontWeight: 600 }}>Ready to download?</span>
-                <span style={{ opacity: 0.8, fontSize: 11 }}>{wordCount} words written</span>
+            <div style={{ display: 'flex', flexDirection: 'column', fontSize: 13, minWidth: 80 }}>
+                <span style={{ fontWeight: 600 }}>Ready?</span>
+                <span style={{ opacity: 0.8, fontSize: 11 }}>{wordCount} words</span>
             </div>
 
+            {/* Export Button */}
             <button
                 onClick={onDownload}
-                style={{
-                    background: '#fff',
-                    color: '#6060ff',
-                    border: 'none',
-                    padding: '8px 16px',
-                    borderRadius: 100,
-                    fontWeight: 700,
-                    cursor: 'pointer',
-                    boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-                    transition: 'transform 0.1s'
-                }}
-                onMouseOver={(e) => e.currentTarget.style.transform = 'scale(1.05)'}
-                onMouseOut={(e) => e.currentTarget.style.transform = 'scale(1)'}
-                onMouseDown={(e) => e.currentTarget.style.transform = 'scale(0.95)'}
+                style={{ ...btnBase, background: '#fff', color: '#6060ff', boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}
+                onMouseOver={e => e.currentTarget.style.transform = 'scale(1.05)'}
+                onMouseOut={e => e.currentTarget.style.transform = 'scale(1)'}
+                onMouseDown={e => e.currentTarget.style.transform = 'scale(0.95)'}
             >
                 Export 📥
             </button>
+
+            {/* Share Button (Web Share API or clipboard fallback) */}
+            {onShare && (
+                <button
+                    onClick={onShare}
+                    title="Share this tool"
+                    style={{ ...btnBase, background: 'rgba(255,255,255,0.18)', color: '#fff' }}
+                    onMouseOver={e => e.currentTarget.style.background = 'rgba(255,255,255,0.28)'}
+                    onMouseOut={e => e.currentTarget.style.background = 'rgba(255,255,255,0.18)'}
+                >
+                    🔗 Share
+                </button>
+            )}
+
+            {/* Copy Link Button */}
+            {onCopyLink && (
+                <button
+                    onClick={onCopyLink}
+                    title="Copy link to this tool"
+                    style={{ ...btnBase, background: 'rgba(255,255,255,0.18)', color: '#fff', fontSize: 11, padding: '8px 10px' }}
+                    onMouseOver={e => e.currentTarget.style.background = 'rgba(255,255,255,0.28)'}
+                    onMouseOut={e => e.currentTarget.style.background = 'rgba(255,255,255,0.18)'}
+                >
+                    📋 Copy Link
+                </button>
+            )}
         </div>
     );
 }

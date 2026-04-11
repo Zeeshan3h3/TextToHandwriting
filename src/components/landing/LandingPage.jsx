@@ -11,17 +11,28 @@ import SEO from '../seo/SEO';
 
 const webAppSchema = {
     "@context": "https://schema.org",
-    "@type": "SoftwareApplication",
+    "@type": "WebApplication",
     "name": "Text to Handwriting Converter",
     "url": "https://texttohandwriting.onrender.com/",
-    "applicationCategory": "UtilitiesApplication",
-    "operatingSystem": "Web",
+    "applicationCategory": "UtilityApplication",
+    "operatingSystem": "Any",
     "offers": {
         "@type": "Offer",
         "price": "0",
         "priceCurrency": "USD"
     },
-    "description": "Convert typed text into realistic handwriting instantly. Supports custom fonts, colors, and paper types."
+    "description": "Convert typed text into realistic handwriting. Download as PNG or multi-page PDF. Free, no watermark.",
+    "featureList": [
+        "Multiple handwriting fonts",
+        "Hindi font support",
+        "Custom font upload",
+        "PDF export",
+        "PNG download",
+        "Dark mode",
+        "Ink color selection",
+        "Paper line toggle",
+        "300 DPI high-resolution output"
+    ]
 };
 
 export default function LandingPage({ onGetStarted, children }) {

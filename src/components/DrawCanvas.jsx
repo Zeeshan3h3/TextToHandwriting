@@ -60,8 +60,12 @@ export function DrawCanvas({ width, height, inkColor, onSave }) {
     }, []);
 
     const clearCanvas = () => {
-        const ctx = canvasRef.current.getContext('2d');
-        ctx.clearRect(0, 0, width, height);
+        const canvas = canvasRef.current;
+        const ctx = canvas.getContext('2d');
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        // BUG 7 FIX: Force Safari repaint by resetting canvas width (triggers full redraw)
+        // eslint-disable-next-line no-self-assign
+        canvas.width = canvas.width;
     };
 
     const handleSave = () => {

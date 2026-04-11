@@ -3,11 +3,42 @@ import { Helmet } from 'react-helmet-async';
 import './FAQSection.css';
 
 const faqs = [
-    { q: 'Is this text to handwriting converter completely free?', a: 'Yes! Our tool is 100% free to use. You can generate and download unlimited handwritten documents without any hidden fees or watermarks.' },
-    { q: 'Can I download my handwriting as a PDF?', a: 'Absolutely. We support high-quality multi-page PDF exports, as well as single-page high-resolution PNG images (up to 300 DPI).' },
-    { q: 'Do I need to create an account?', a: 'No signup or login is required. We respect your privacy, and all processing is done locally in your browser.' },
-    { q: 'Can I upload my own handwriting font?', a: 'Yes, if you have a custom .ttf or .otf font file of your own handwriting, you can upload it directly into the tool.' },
-    { q: 'Are the documents saved on your servers?', a: 'No. Everything runs client-side in your browser. We do not store your text, fonts, or generated images on our servers.' }
+    {
+        q: 'Is this text to handwriting converter completely free?',
+        a: 'Yes! Our handwriting generator is 100% free with no watermark — you can generate and download unlimited handwritten documents without any hidden fees, subscriptions, or signup required.'
+    },
+    {
+        q: 'Can I download my handwriting as a PDF?',
+        a: 'Absolutely. We support high-quality multi-page PDF exports — making it the best handwritten notes generator PDF tool available. You can also download single-page high-resolution PNG images (up to 300 DPI).'
+    },
+    {
+        q: 'Do I need to create an account?',
+        a: 'No signup or login is required. We respect your privacy, and all processing is done locally in your browser. Just type, customise, and download.'
+    },
+    {
+        q: 'Can I upload my own handwriting font online?',
+        a: 'Yes. If you have a custom .ttf or .otf font file of your own handwriting, you can upload your own handwriting font online directly into the tool. This makes your output uniquely yours and indistinguishable from real handwriting.'
+    },
+    {
+        q: 'Does it support Hindi text to handwriting?',
+        a: 'Yes, we support Hindi text to handwriting online via the Kruti-dev font. For best results, use phonetic transliteration or the Kruti-dev keyboard layout. Note: standard Unicode Devanagari may not render correctly with this legacy font.'
+    },
+    {
+        q: 'Can I use this to convert my assignment to handwriting?',
+        a: 'Absolutely — this is one of the most popular use cases. Simply paste your typed assignment text, select a handwriting style, adjust messiness and spacing, and download as PDF to print or submit digitally. Thousands of students use our tool to convert assignment to handwriting every day.'
+    },
+    {
+        q: 'How do I make text look handwritten for free?',
+        a: 'Use our free online converter: paste your typed text, pick a cursive or casual font, adjust ink color (blue, black, red pen), set paper type, and click Download. It is the fastest way to make text look handwritten free — no software to install.'
+    },
+    {
+        q: 'What is the best text to cursive handwriting converter?',
+        a: 'Our tool offers multiple cursive fonts including Dancing Script, Sacramento, and Caveat for a text to cursive handwriting converter effect. You can also adjust letter spacing, messiness, and line height for maximum realism.'
+    },
+    {
+        q: 'Are the documents saved on your servers?',
+        a: 'No. Everything runs client-side in your browser. We do not store your text, fonts, or generated images on our servers. Your content stays private.'
+    }
 ];
 
 export default function FAQSection() {

@@ -137,6 +137,16 @@ export function ControlPanel({
                 </button>
               ))}
             </div>
+            {/* BUG 9 FIX: Hindi font tooltip when Kruti-dev is selected */}
+            {settings.font === 'kruti-dev' && (
+              <div style={{
+                marginTop: 8, padding: '8px 10px', borderRadius: 6,
+                background: '#2a1a0a', border: '1px solid #6a4010',
+                color: '#ddaa66', fontSize: 11, fontFamily: 'system-ui', lineHeight: 1.5,
+              }}>
+                ℹ️ <strong>Kruti-dev (Hindi):</strong> For best results, type in phonetic transliteration or use Kruti-dev keyboard layout. Standard Unicode Devanagari may not render correctly.
+              </div>
+            )}
           </div>
 
           {/* ── 4. CUSTOM FONT UPLOAD ── */}
@@ -345,6 +355,13 @@ export function ControlPanel({
 
       {/* ── GENERATE IMAGE BUTTON ── */}
       <div style={{ paddingTop: 16, borderTop: `1px solid ${borderColor}`, marginTop: 'auto' }}>
+        {/* BUG 10 FIX: Preview vs output mismatch note */}
+        <p style={{
+          fontSize: 11, color: textSecondary, marginBottom: 10,
+          fontFamily: 'system-ui', lineHeight: 1.4, textAlign: 'center',
+        }}>
+          ⚠️ The preview is approximate. The downloaded file is the accurate final output.
+        </p>
         <button
           className={`generate-button generate-button--${isGenerating ? 'loading' : 'idle'}`}
           onClick={onGenerate}
