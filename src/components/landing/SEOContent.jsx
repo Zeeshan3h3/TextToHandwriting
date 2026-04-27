@@ -3,7 +3,25 @@ import React from 'react';
 export default function SEOContent() {
     return (
         <section style={{ padding: '60px 20px', maxWidth: '800px', margin: '0 auto', color: '#e0e0ff', lineHeight: 1.8 }}>
+
+            {/* ── Feature Highlights ── */}
+            <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 56px 0', display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                <li style={{ background: '#1a1a2e', borderRadius: '12px', padding: '20px 24px', borderLeft: '4px solid #7c6aff' }}>
+                    <strong style={{ fontSize: '1.05rem', color: '#fff' }}>Completely Free</strong>
+                    <span style={{ color: '#a0a0c0' }}> — No hidden charges, no subscription, and no account needed. Just open the tool and start converting right away.</span>
+                </li>
+                <li style={{ background: '#1a1a2e', borderRadius: '12px', padding: '20px 24px', borderLeft: '4px solid #7c6aff' }}>
+                    <strong style={{ fontSize: '1.05rem', color: '#fff' }}>Instant PNG Download</strong>
+                    <span style={{ color: '#a0a0c0' }}> — Once you're happy with how your handwriting looks, download it as a high-quality PNG image in one click — ready to print, share, or attach to any document.</span>
+                </li>
+                <li style={{ background: '#1a1a2e', borderRadius: '12px', padding: '20px 24px', borderLeft: '4px solid #7c6aff' }}>
+                    <strong style={{ fontSize: '1.05rem', color: '#fff' }}>Realistic Handwriting Output</strong>
+                    <span style={{ color: '#a0a0c0' }}> — Choose from multiple handwriting styles that actually look natural, not like a font. The result is indistinguishable from real pen-on-paper writing.</span>
+                </li>
+            </ul>
+
             <h2 style={{ fontSize: '2rem', marginBottom: '24px', fontWeight: 700 }}>About Our Text to Handwriting Converter</h2>
+
             <p style={{ marginBottom: '20px' }}>
                 In today's digital age, completing assignments and taking notes on a computer is incredibly efficient. However, many schools, universities, and professors still require handwritten submissions to ensure authenticity and effort. That's where our <strong>text to handwriting converter</strong> comes in — a free online tool that transforms any <strong>typed text to handwriting image</strong> in seconds. We have developed one of the most realistic <strong>handwriting generator no watermark</strong> solutions available on the web.
             </p>

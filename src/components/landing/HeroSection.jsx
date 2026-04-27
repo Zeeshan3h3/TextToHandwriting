@@ -6,7 +6,7 @@ export default function HeroSection({ onGetStarted }) {
         <section className="landing-hero">
             <div className="hero-inner">
                 <h1 className="hero-title">
-                    Free Text to Handwriting Converter
+                    Convert Text to Handwriting – Free Online Tool
                 </h1>
                 <p className="hero-social-proof">
                     Used by 10,000+ students worldwide to convert assignments, notes, and letters to handwriting.
@@ -15,6 +15,15 @@ export default function HeroSection({ onGetStarted }) {
                     Type or paste any text and download it as a realistic handwritten image or PDF — free, no watermark.
                     Perfect for converting assignments, study notes, and letters into authentic-looking handwriting.
                 </h2>
+
+                <p style={{ fontSize: '1rem', lineHeight: 1.8, color: '#7a7a9a', marginTop: '1.25rem', maxWidth: '640px', margin: '1.25rem auto 0' }}>
+                    Ever wished your typed notes looked like they were written by hand? With this free online
+                    handwriting generator, you can convert text to handwriting in just a few clicks — no downloads,
+                    no signup, no cost. Whether you're a student who wants their assignment to look handwritten,
+                    writing a personal letter, journaling, or just making your notes feel a little more human,
+                    this tool has you covered. Simply type your text, pick a style, and get realistic handwriting
+                    output instantly.
+                </p>
 
                 <div className="hero-cta-group">
                     <button className="hero-btn-primary" onClick={onGetStarted}>
