@@ -11,6 +11,9 @@ import { applyEffect } from './utils/effects';
 import { getScale } from './constants/resolution';
 import { HANDWRITING_FONTS } from './constants/fonts';
 import { Routes, Route, useNavigate } from 'react-router-dom';
+import { generateAdvancedPDF } from './utils/canvasRenderer';
+import { extractTextFromFile } from './utils/FileExtractor';
+import { encodeStateToUrl, decodeStateFromUrl } from './utils/urlState';
 import './styles/global.css';
 import './App.css';
 
@@ -86,21 +89,32 @@ function App() {
     inkOpacityBoost: 1.0,
   });
 
+  const [extendedConfig, setExtendedConfig] = useState({
+    realismLevel: 65,
+    advancedPaperType: 'ruled',
+    pageSize: 'A4',
+    leftMargin: 80,
+    topMargin: 80,
+    bottomMargin: 40,
+    headerEnabled: false,
+    headerFields: { name: '', date: '', assignment: '', regNo: '' },
+    isDraft: false,
+    compressionLevel: 0.9,
+    scannerEffectEnabled: false,
+    scannerIntensity: 50
+  });
+
   // ── UI state ───────────────────────────────────────────────────────────────
-  // BUG 6 FIX: Dark mode persisted via localStorage with system preference fallback
   const [darkMode, setDarkMode] = useState(() => {
     const saved = localStorage.getItem('hv-theme');
     if (saved === 'dark') return true;
     if (saved === 'light') return false;
-    // Legacy key support
     const legacy = localStorage.getItem('tf_dark_mode');
     if (legacy !== null) return JSON.parse(legacy);
-    // Fallback to system preference
     return window.matchMedia('(prefers-color-scheme: dark)').matches;
   });
 
   useEffect(() => {
-    // BUG 6 FIX: Persist with canonical key 'hv-theme'
     localStorage.setItem('hv-theme', darkMode ? 'dark' : 'light');
     if (darkMode) {
       document.body.style.background = '#0f0f1a';
@@ -111,8 +125,23 @@ function App() {
     }
   }, [darkMode]);
 
+  // Load from URL on mount
+  useEffect(() => {
+    const sharedState = decodeStateFromUrl();
+    if (sharedState) {
+      setSettings(prev => ({ ...prev, ...sharedState.settings }));
+      setExtendedConfig(prev => ({ ...prev, ...sharedState.extendedConfig }));
+      
+      // Clean up URL after loading to prevent link rot sharing
+      const url = new URL(window.location.href);
+      url.searchParams.delete('share');
+      window.history.replaceState({}, '', url);
+    }
+  }, []);
+
   const [drawMode, setDrawMode] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [isExporting, setIsExporting] = useState(false);
   const [generateProgress, setGenerateProgress] = useState('');
   const [textStats, setTextStats] = useState({ chars: 0, words: 0 });
   const [showExportModal, setShowExportModal] = useState(false);
@@ -121,7 +150,6 @@ function App() {
   const paperRefs = useRef([]);
   const theme = darkMode ? DARK_THEME : LIGHT_THEME;
 
-  // ── Functional-form setters ───────────────────────────────────────────────
   const updateSetting = useCallback((key, value) => {
     setSettings(prev => ({ ...prev, [key]: value }));
   }, []);
@@ -130,7 +158,6 @@ function App() {
     setSettings(prev => ({ ...prev, ...patch }));
   }, []);
 
-  // ── BUG 3 FIX: Custom font upload with race condition prevention ──────────
   const handleCustomFontUpload = (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -141,7 +168,6 @@ function App() {
     }
     const reader = new FileReader();
     reader.onload = (ev) => {
-      // BUG 3 FIX: Use FontFace API and wait for document.fonts.ready before applying
       const font = new FontFace('CustomHandwriting', ev.target.result);
       font.load().then((loadedFont) => {
         document.fonts.add(loadedFont);
@@ -156,7 +182,6 @@ function App() {
     reader.readAsArrayBuffer(file);
   };
 
-  // ── Custom paper background upload ────────────────────────────────────────
   const handlePaperImageUpload = (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -165,7 +190,6 @@ function App() {
     reader.readAsDataURL(file);
   };
 
-  // Resolve current fontFamily from font id
   const resolvedFontFamily = React.useMemo(() => {
     const found = HANDWRITING_FONTS.find(f => f.id === settings.font);
     return found ? found.family : settings.fontFamily;
@@ -175,11 +199,9 @@ function App() {
     console.log("Draw save triggered, data:", dataUrl.substring(0, 30) + '...');
   }, []);
 
-  // ── PDF/PNG Export ──────────────────────────────────────────────
   const handleExport = async ({ format, quality }) => {
     setShowExportModal(false);
 
-    // BUG 1 FIX: Empty input validation
     const currentText = paperRefs.current
       ?.map(el => el?.innerText || '')
       .join('')
@@ -194,12 +216,10 @@ function App() {
 
     try {
       await document.fonts.ready;
-      await new Promise(r => setTimeout(r, 400)); // wait for layout settling
+      await new Promise(r => setTimeout(r, 400)); 
 
-      // Base scale based on resolution setting
       let scale = getScale(settings.resolution) ?? 1.5;
 
-      // BUG 4 FIX: Cap resolution for long texts to prevent browser crash
       const totalTextLength = paperRefs.current
         ?.map(el => el?.innerText?.length || 0)
         .reduce((a, b) => a + b, 0) || 0;
@@ -208,14 +228,12 @@ function App() {
         showToast('⚠️ Resolution capped to High for long texts to prevent browser crash.');
       }
 
-      // Override if user selected High 300 DPI mode explicitly in modal
       if (quality === 'high') {
-        // Still cap for very long texts even in high quality mode
         if (totalTextLength > 500) {
           scale = 2;
           showToast('⚠️ High DPI capped to 2x for long texts to prevent crash.');
         } else {
-          scale = 3.125; // 300 DPI relative to 96
+          scale = 3.125;
         }
       }
 
@@ -233,40 +251,34 @@ function App() {
       for (let i = 0; i < validRefs.length; i++) {
         setGenerateProgress(`Rendering page ${i + 1} of ${validRefs.length}…`);
         const el = validRefs[i];
-
-        // Save bounds and transform to prevent html2canvas glitches on scaled elements
         const prevTransform = el.style.transform;
         el.style.transform = 'none';
 
-        // BUG 5 FIX: Add bottom padding buffer to prevent last-line clipping
         const canvas = await html2canvas(el, {
           scale,
           useCORS: true,
           backgroundColor: '#fafaf8',
           logging: false,
           width: 794,
-          height: 1123 + 40, // 40px bottom padding buffer
+          height: 1123 + 40,
           windowWidth: 794,
           windowHeight: 1123 + 40,
         });
 
-        // Restore original scale after capture
         el.style.transform = prevTransform;
-
         const effCanvas = applyEffect(canvas, settings.effect);
 
         if (format === 'pdf') {
           if (i > 0) pdf.addPage('a4', 'portrait');
           pdf.addImage(effCanvas.toDataURL('image/jpeg', 0.95), 'JPEG', 0, 0, 210, 297);
         } else {
-          // Format PNG
           const dataUrl = effCanvas.toDataURL('image/png');
           if (i === 0) firstCanvasDataUrl = dataUrl;
           const link = document.createElement('a');
           link.download = `handwritten-page-${i + 1}.png`;
           link.href = dataUrl;
           link.click();
-          await new Promise(r => setTimeout(r, 200)); // Stagger multiple downloads
+          await new Promise(r => setTimeout(r, 200));
         }
       }
 
@@ -275,10 +287,7 @@ function App() {
         pdf.save('handwritten-notes.pdf');
       }
 
-      // Store URL for share feature
       setLastExportedUrl(window.location.href);
-
-      // BUG 2 FIX: Toast notification on successful export (loader was already handled via isGenerating)
       showToast(`✅ ${format.toUpperCase()} downloaded successfully!`);
 
     } catch (err) {
@@ -287,6 +296,28 @@ function App() {
     } finally {
       setIsGenerating(false);
       setGenerateProgress('');
+    }
+  };
+
+  const handleAdvancedExport = async () => {
+    setIsExporting(true);
+    const fullText = paperRefs.current?.map(el => el?.innerText || '').join('\n');
+    try {
+      await generateAdvancedPDF(fullText, settings, extendedConfig);
+    } catch (err) {
+      console.error(err);
+      alert('Advanced Export failed. Check console for details.');
+    }
+    setIsExporting(false);
+  };
+
+  const handleExtractText = async (file) => {
+    try {
+      const text = await extractTextFromFile(file);
+      updateSettings({ initialText: text, editorKey: Date.now() });
+      showToast('📄 Text extracted successfully!');
+    } catch (err) {
+      showToast('❌ ' + err.message);
     }
   };
 
@@ -307,47 +338,52 @@ function App() {
     setTextStats({ chars, words });
   };
 
-  // ── VIRAL FEATURE 1: Web Share API ────────────────────────────────────────
   const handleShare = async () => {
+    const shareUrl = encodeStateToUrl(settings, extendedConfig);
     const shareData = {
       title: 'Free Text to Handwriting Converter',
       text: 'Convert any text into realistic handwriting — free, no watermark! 🖊️',
-      url: window.location.href,
+      url: shareUrl,
     };
     try {
       if (navigator.share) {
         await navigator.share(shareData);
       } else {
-        // Fallback: copy to clipboard
-        await navigator.clipboard.writeText(window.location.href);
+        await navigator.clipboard.writeText(shareUrl);
         showToast('🔗 Link copied to clipboard!');
       }
     } catch (err) {
       if (err.name !== 'AbortError') {
-        await navigator.clipboard.writeText(window.location.href).catch(() => { });
+        await navigator.clipboard.writeText(shareUrl).catch(() => { });
         showToast('🔗 Link copied to clipboard!');
       }
     }
   };
 
-  // ── VIRAL FEATURE 2: Copy link ────────────────────────────────────────────
   const handleCopyLink = async () => {
+    const shareUrl = encodeStateToUrl(settings, extendedConfig);
     try {
-      await navigator.clipboard.writeText(window.location.href);
+      await navigator.clipboard.writeText(shareUrl);
       showToast('🔗 Link copied to clipboard!');
     } catch {
       showToast('Could not copy link. Please copy the URL manually.');
     }
   };
 
-  // ── Render ────────────────────────────────────────────────────────────────
   const workspaceContent = (
     <div className="app-workspace" style={{ background: theme.appBg, height: '100vh' }}>
       <ControlPanel
         settings={settings}
+        extendedConfig={extendedConfig}
+        setExtendedConfig={setExtendedConfig}
+        resolvedFontFamily={resolvedFontFamily}
         updateSetting={updateSetting}
         updateSettings={updateSettings}
         paperRefs={paperRefs}
+        onExport={handleExport}
+        onAdvancedExport={handleAdvancedExport}
+        onExtractText={handleExtractText}
+        isExporting={isExporting}
         theme={theme}
         darkMode={darkMode}
         onToggleDark={() => setDarkMode(d => !d)}
@@ -362,6 +398,7 @@ function App() {
       />
       <div className="preview-area" style={{ background: theme.previewBg, display: 'flex', flexDirection: 'column', position: 'relative' }}>
         <MultiPagePaperEditor
+          key={settings.editorKey || 'editor'}
           settings={{ ...settings, fontFamily: resolvedFontFamily, drawMode }}
           paperRefs={paperRefs}
           onDrawSave={handleDrawSave}

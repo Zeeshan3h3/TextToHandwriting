@@ -5,6 +5,7 @@ import { EFFECTS } from '../utils/effects';
 import { ColorPalette } from './ColorPalette';
 import { RESOLUTIONS } from '../constants/resolution';
 import { CollapsibleSection } from './controls/CollapsibleSection';
+import { AdvancedSettings } from './controls/AdvancedSettings';
 import './ControlPanel.css';
 
 // ── Toggle switch sub-component ───────────────────────────────────────────────
@@ -32,6 +33,9 @@ function Toggle({ value, onChange, theme }) {
 
 export function ControlPanel({
   settings,
+  extendedConfig,
+  setExtendedConfig,
+  resolvedFontFamily,
   updateSetting,
   updateSettings,
   paperRefs,
@@ -46,6 +50,10 @@ export function ControlPanel({
   isGenerating,
   generateProgress,
   textStats,
+  onExport,
+  onAdvancedExport,
+  onExtractText,
+  isExporting
 }) {
   const t = theme || {};
   const panelBg = t.panelBg || '#1e1e2e';
@@ -79,13 +87,42 @@ export function ControlPanel({
           onClick={onToggleDark}
           title={darkMode ? 'Light mode' : 'Dark mode'}
           style={{
-            background: 'none', border: `1px solid ${borderColor}`,
-            borderRadius: 20, padding: '4px 10px', cursor: 'pointer',
-            fontSize: 16, color: inputText,
+            background: t.primary || '#6060ff', border: `1px solid ${borderColor}`,
+            color: 'white', borderRadius: '6px', padding: '4px 10px', cursor: 'pointer',
+            fontSize: 16,
           }}
         >
-          {darkMode ? '☀️' : '🌙'}
+          {darkMode ? '☀️ Light' : '🌙 Dark'}
         </button>
+      </div>
+
+      <div style={{ padding: '0 16px 12px' }}>
+        <label style={{
+          display: 'block',
+          width: '100%',
+          padding: '10px',
+          background: panelBg,
+          color: inputText,
+          border: `1px solid ${borderColor}`,
+          borderRadius: '8px',
+          textAlign: 'center',
+          cursor: 'pointer',
+          fontWeight: 'bold',
+          fontSize: '14px',
+          boxSizing: 'border-box'
+        }}>
+          📄 Extract Text from File (PDF/DOCX)
+          <input 
+            type="file" 
+            accept=".pdf,.docx,.txt" 
+            style={{ display: 'none' }} 
+            onChange={(e) => {
+              if (e.target.files[0]) {
+                onExtractText(e.target.files[0]);
+              }
+            }}
+          />
+        </label>
       </div>
 
       <div style={{ flex: 1, overflowY: 'auto', paddingRight: 8 }}>
@@ -319,6 +356,16 @@ export function ControlPanel({
                 onChange={e => updateSetting('messiness', parseInt(e.target.value))} />
             </div>
           </div>
+        </CollapsibleSection>
+
+        <CollapsibleSection title="Advanced Settings (Beta)" defaultOpen={true} theme={theme}>
+          <AdvancedSettings 
+            extendedConfig={extendedConfig} 
+            setExtendedConfig={setExtendedConfig} 
+            theme={theme} 
+            fontFamily={resolvedFontFamily}
+            onExport={onAdvancedExport}
+          />
         </CollapsibleSection>
 
         <CollapsibleSection title="Export Settings" defaultOpen={false} theme={theme}>
